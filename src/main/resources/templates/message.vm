@@ -1,0 +1,12 @@
+<html>
+	<body>
+		<p>
+			Hello my dear $user,<br><br>
+			
+			A very very happy birthday to you. :D<br><br>
+			
+			Regards,<br>
+			Your Name.
+		</p>
+	</body>
+</html>
