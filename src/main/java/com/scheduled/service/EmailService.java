@@ -57,7 +57,7 @@ public class EmailService implements InitializingBean {
 		return res;
 	}
 
-	public void sendEmail(User user) throws MessagingException, IOException {
+	public void sendEmail(final User user) throws MessagingException, IOException {
 		log.info("Sending Email...");
 		final VelocityContext context = new VelocityContext();
 		final Template t = Velocity.getTemplate("./src/main/resources/templates/message.vm");
