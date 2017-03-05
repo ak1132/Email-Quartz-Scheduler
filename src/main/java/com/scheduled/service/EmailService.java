@@ -3,6 +3,8 @@ package com.scheduled.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -12,12 +14,15 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
+import com.hibernate.utils.HibernateUtils;
 import com.scheduled.model.Email;
 import com.scheduled.model.User;
 
@@ -57,7 +62,7 @@ public class EmailService implements InitializingBean {
 		final VelocityContext context = new VelocityContext();
 		final Template t = Velocity.getTemplate("./src/main/resources/templates/message.vm");
 		final Email userEmail = user.getEmail();
-		
+
 		MimeMessagePreparator preparator = new MimeMessagePreparator() {
 			public void prepare(MimeMessage mimeMessage) throws Exception {
 				MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
@@ -71,9 +76,26 @@ public class EmailService implements InitializingBean {
 				message.setText(stringWriter.toString(), true);
 			}
 		};
-		
+
 		mailSender.send(preparator);
 		log.info("Email Sent to " + userEmail.getToaddress());
+		updateBirthDate(user);
+		log.info(user.getName() + "'s Birthday has been updated to " + user.getBirthDate());
+
+	}
+
+	public void updateBirthDate(User user) {
+		Date currentBdate = user.getBirthDate();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(currentBdate);
+		calendar.add(Calendar.YEAR, 1); // Add a year to currentBirthdate
+
+		Session session = HibernateUtils.getCurrentSession();
+		Transaction tx = session.beginTransaction();
+		user.setBirthDate(calendar.getTime());
+		session.save(user);
+		tx.commit();
+		session.close();
 	}
 
 	public void afterPropertiesSet() throws Exception {
