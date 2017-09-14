@@ -3,8 +3,6 @@ package com.scheduled.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -14,15 +12,14 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
-import com.hibernate.utils.HibernateUtils;
+import com.scheduled.dao.UserDao;
 import com.scheduled.model.Email;
 import com.scheduled.model.User;
 
@@ -30,9 +27,12 @@ public class EmailService implements InitializingBean {
 
 	static Logger log = Logger.getLogger(EmailService.class);
 
-	private JavaMailSenderImpl mailSender = null;
+	private JavaMailSenderImpl mailSender;
 
 	private VelocityEngine velocityEngine;
+
+	@Autowired
+	UserDao userDao;
 
 	public void setMailSender(JavaMailSenderImpl mailSender) {
 		this.mailSender = mailSender;
@@ -64,6 +64,7 @@ public class EmailService implements InitializingBean {
 		final Email userEmail = user.getEmail();
 
 		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			@Override
 			public void prepare(MimeMessage mimeMessage) throws Exception {
 				MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
 				FileSystemResource fsr = getResource(userEmail.getAttachment());
@@ -79,25 +80,12 @@ public class EmailService implements InitializingBean {
 
 		mailSender.send(preparator);
 		log.info("Email Sent to " + userEmail.getToaddress());
-		updateBirthDate(user);
+		userDao.updateBirthDate(user);
 		log.info(user.getName() + "'s Birthday has been updated to " + user.getBirthDate());
 
 	}
 
-	public void updateBirthDate(User user) {
-		Date currentBdate = user.getBirthDate();
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(currentBdate);
-		calendar.add(Calendar.YEAR, 1); // Add a year to currentBirthdate
-
-		Session session = HibernateUtils.getCurrentSession();
-		Transaction tx = session.beginTransaction();
-		user.setBirthDate(calendar.getTime());
-		session.save(user);
-		tx.commit();
-		session.close();
-	}
-
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (mailSender == null)
 			throw new Exception("mailSender not set");
