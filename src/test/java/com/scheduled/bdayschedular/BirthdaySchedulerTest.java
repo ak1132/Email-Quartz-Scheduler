@@ -1,5 +1,7 @@
 package com.scheduled.bdayschedular;
 
+import static org.junit.Assert.assertThat;
+
 import java.util.Date;
 
 import org.junit.Test;
@@ -11,7 +13,7 @@ import com.scheduled.model.User;
 public class BirthdaySchedulerTest extends SchedulerHibernateDaoSupport {
 
 	@Test
-	public void testBirthdayEmailSending() {
+	public void testBirthdayEmail() {
 
 		// Dummy test for adding objects to Hibernate
 		Email email = new Email();
@@ -28,6 +30,7 @@ public class BirthdaySchedulerTest extends SchedulerHibernateDaoSupport {
 		user.setName("");
 
 		getHibernateTemplate().saveOrUpdate(user);
+		assertThat(user).is;
 		getHibernateTemplate().flush();
 	}
 }

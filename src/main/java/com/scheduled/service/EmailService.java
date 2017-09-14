@@ -32,7 +32,7 @@ public class EmailService implements InitializingBean {
 	private VelocityEngine velocityEngine;
 
 	@Autowired
-	UserDao userDao;
+	private UserDao userDao;
 
 	public void setMailSender(JavaMailSenderImpl mailSender) {
 		this.mailSender = mailSender;
