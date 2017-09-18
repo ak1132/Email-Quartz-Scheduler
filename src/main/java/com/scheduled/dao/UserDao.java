@@ -4,17 +4,24 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.scheduled.model.User;
 
 @Repository
 public class UserDao extends SchedulerHibernateDaoSupport {
 
+	Log log = LogFactory.getLog(UserDao.class);
+
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void updateBirthDate(User user) {
 
 		Date currentBdate = user.getBirthDate();
@@ -26,33 +33,27 @@ public class UserDao extends SchedulerHibernateDaoSupport {
 		user.setBirthDate(calendar.getTime());
 
 		getHibernateTemplate().saveOrUpdate(user);
-		getHibernateTemplate().flush();
 	}
 
-	private static Date trim(Date date) {
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		calendar.set(Calendar.MILLISECOND, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		return calendar.getTime();
-	}
-
+	@Transactional(propagation = Propagation.REQUIRED)
 	@SuppressWarnings("unchecked")
-	public List<User> getUsersBornToday() {
+	public List<User> getUsersBornToday(final Date today) {
 
 		List<User> usersBornToday = getHibernateTemplate().execute(new HibernateCallback<List<User>>() {
 
 			@Override
 			public List<User> doInHibernate(Session session) throws HibernateException {
 				Query query = session.createQuery("from User where birthDate= :bdate");
-				query.setParameter("bdate", trim(new Date()));
+				query.setParameter("bdate", today);
 				return query.getResultList();
 			}
 		});
 		return usersBornToday;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void saveUser(User user) {
+		getHibernateTemplate().saveOrUpdate(user);
 	}
 
 }

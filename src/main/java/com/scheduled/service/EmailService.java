@@ -7,7 +7,8 @@ import java.io.StringWriter;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -25,7 +26,7 @@ import com.scheduled.model.User;
 
 public class EmailService implements InitializingBean {
 
-	static Logger log = Logger.getLogger(EmailService.class);
+	Log log = LogFactory.getLog(EmailService.class);
 
 	private JavaMailSenderImpl mailSender;
 

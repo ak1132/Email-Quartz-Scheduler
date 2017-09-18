@@ -5,11 +5,9 @@
 
 <hibernate-configuration>
 
-	<session-factory>	
+	<session-factory>
 		<mapping class="com.scheduled.model.User" />
 		<mapping class="com.scheduled.model.Email" />
-		<mapping class="com.scheduled.model.Attachment" />
-
 	</session-factory>
 
 </hibernate-configuration>

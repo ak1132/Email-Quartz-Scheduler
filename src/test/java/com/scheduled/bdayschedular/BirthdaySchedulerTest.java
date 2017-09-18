@@ -1,9 +1,11 @@
 package com.scheduled.bdayschedular;
 
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import com.scheduled.dao.SchedulerHibernateDaoSupport;
@@ -11,6 +13,8 @@ import com.scheduled.model.Email;
 import com.scheduled.model.User;
 
 public class BirthdaySchedulerTest extends SchedulerHibernateDaoSupport {
+
+	Log log = LogFactory.getLog(BirthdaySchedulerTest.class);
 
 	@Test
 	public void testBirthdayEmail() {
@@ -30,7 +34,8 @@ public class BirthdaySchedulerTest extends SchedulerHibernateDaoSupport {
 		user.setName("");
 
 		getHibernateTemplate().saveOrUpdate(user);
-		assertThat(user).is;
+		assertThat(user).isNotNull();
+
 		getHibernateTemplate().flush();
 	}
 }

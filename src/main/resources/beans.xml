@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<context:annotation-config />
 	<context:component-scan base-package="com.scheduled" />
 
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-		<property name="driverClassName" value="${hibernate.connection.driver_class}"></property>
-		<property name="url" value="${hibernate.connection.url}"></property>
-		<property name="username" value="${hibernate.connection.username}"></property>
-		<property name="password" value="${hibernate.connection.password}"></property>
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.hsqldb.jdbc.JDBCDriver"></property>
+		<property name="url" value="jdbc:hsqldb:hsql://localhost/"></property>
+		<property name="username" value="sa"></property>
+		<property name="password" value=""></property>
 	</bean>
 
 	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate4.AnnotatedSessionFactoryBean">
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
 		<property name="hibernateProperties">
 			<util:properties location="classpath:hibernate.properties" />
@@ -26,18 +30,40 @@
 		<property name="configLocation" value="classpath:hibernate.cfg.xml" />
 	</bean>
 
-	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
+
+	<tx:annotation-driven transaction-manager="txManager" />
+
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<aop:pointcut id="schedulerServiceOperations"
+			expression="execution(* com.scheduled.service.*.*(..))" />
+		<aop:pointcut id="schedulerDaoOperations" expression="execution(* com.scheduled.dao.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="schedulerServiceOperations" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="schedulerDaoOperations" />
+	</aop:config>
 
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
 		<property name="port" value="465" />
 		<property name="protocol" value="smtps" />
 		<!-- Add your email id here -->
-		<property name="username" value="" />
+		<property name="username" value="madhacker08@gmail.com" />
 		<!-- Add your password here -->
-		<property name="password" value="" />
+		<property name="password" value="hackers007" />
 		<property name="javaMailProperties">
 			<props>
 				<prop key="mail.smtps.auth">true</prop>
