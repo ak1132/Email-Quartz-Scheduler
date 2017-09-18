@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import com.scheduled.model.User;
@@ -23,11 +22,14 @@ public class BirthdayJob extends QuartzJobBean implements InitializingBean {
 
 	private EmailService emailService;
 
-	@Autowired
 	private UserService userService;
 
 	public void setEmailService(EmailService emailService) {
 		this.emailService = emailService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 
 	@Override

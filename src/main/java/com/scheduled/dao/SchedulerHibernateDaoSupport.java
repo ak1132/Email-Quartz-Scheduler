@@ -2,7 +2,6 @@ package com.scheduled.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +26,10 @@ public class SchedulerHibernateDaoSupport implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (hibernateTemplate == null) {
-			log.error("hibernateTemplate not set");
+			throw new Exception("hibernateTemplate not set");
 		}
 		if (sessionFactory == null) {
-			log.error("sessionFactory not set");
+			throw new Exception("sessionFactory not set");
 		}
 
 	}

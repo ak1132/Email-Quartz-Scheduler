@@ -61,9 +61,9 @@
 		<property name="port" value="465" />
 		<property name="protocol" value="smtps" />
 		<!-- Add your email id here -->
-		<property name="username" value="madhacker08@gmail.com" />
+		<property name="username" value="" />
 		<!-- Add your password here -->
-		<property name="password" value="hackers007" />
+		<property name="password" value="" />
 		<property name="javaMailProperties">
 			<props>
 				<prop key="mail.smtps.auth">true</prop>
@@ -76,6 +76,7 @@
 	<bean name="emailService" class="com.scheduled.service.EmailService">
 		<property name="mailSender" ref="mailSender" />
 		<property name="velocityEngine" ref="velocityEngine" />
+		<property name="userDao" ref="userDao" />
 	</bean>
 
 
@@ -87,6 +88,7 @@
 		<property name="jobDataMap">
 			<map>
 				<entry key="emailService" value-ref="emailService" />
+				<entry key="userService" value-ref="userService" />
 			</map>
 		</property>
 		<property name="durability" value="true" />

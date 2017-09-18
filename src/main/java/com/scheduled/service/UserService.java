@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.scheduled.dao.UserDao;
 import com.scheduled.model.User;
 
-@Service
+@Service("userService")
 public class UserService implements InitializingBean {
 
 	@Autowired

@@ -14,7 +14,6 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -32,7 +31,6 @@ public class EmailService implements InitializingBean {
 
 	private VelocityEngine velocityEngine;
 
-	@Autowired
 	private UserDao userDao;
 
 	public void setMailSender(JavaMailSenderImpl mailSender) {
@@ -41,6 +39,10 @@ public class EmailService implements InitializingBean {
 
 	public void setVelocityEngine(VelocityEngine velocityEngine) {
 		this.velocityEngine = velocityEngine;
+	}
+
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
 	}
 
 	public MimeMessageHelper createNewMimeMessageHelper(boolean hasAttachments, String email, String subject,

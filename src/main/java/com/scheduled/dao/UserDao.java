@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.scheduled.model.User;
 
-@Repository
+@Repository("userDao")
 public class UserDao extends SchedulerHibernateDaoSupport {
 
 	Log log = LogFactory.getLog(UserDao.class);
